@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.WeatherAnalyzerTheme
 import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.SplashScreenAnimate
 import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main.MainScreen
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.weekforecast.WeekForecast
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +31,7 @@ fun Weather() {
     NavHost(navController = navHostController, startDestination = "splash") {
         composable("splash") { SplashScreenAnimate(navHostController) }
         composable("main") { MainScreen(navHostController) }
+        composable("weekForecast") { WeekForecast(navHostController) }
     }
 }
 

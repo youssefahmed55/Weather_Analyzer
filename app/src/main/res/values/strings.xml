@@ -9,4 +9,5 @@
     <string name="weather_statue_image">weather statue image</string>
     <string name="location_icon">Location Icon</string>
     <string name="search_icon">Search Icon</string>
+    <string name="next_week">Next Week</string>
 </resources>

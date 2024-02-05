@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import com.weatheraanalyzerrrr.weatheranalyzer.R
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -91,6 +92,7 @@ fun MainScreen(navController: NavController? = null) {
             }
 
             Image(
+                modifier = Modifier.clickable { navController?.navigate("weekForecast") },
                 imageVector = Icons.Default.DateRange,
                 contentDescription = stringResource(R.string.date_range_icon),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
