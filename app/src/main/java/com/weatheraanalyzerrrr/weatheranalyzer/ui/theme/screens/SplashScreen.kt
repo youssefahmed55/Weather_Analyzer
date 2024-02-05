@@ -36,7 +36,7 @@ fun SplashScreenAnimate(navController: NavController) {
         ))
 
         delay(2000L)
-        //navController.navigate("Main")
+        navController.navigate("main")
     }
 
     Box(

@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Weather Analyzer</string>
+    <string name="search_city">Search City</string>
+    <string name="humidity">Humidity</string>
+    <string name="feels_like">FEELS LIKE</string>
+    <string name="pressure">PRESSURE</string>
+    <string name="wind">Wind</string>
+    <string name="date_range_icon">Date Range Icon</string>
+    <string name="weather_statue_image">weather statue image</string>
+    <string name="location_icon">Location Icon</string>
+    <string name="search_icon">Search Icon</string>
 </resources>

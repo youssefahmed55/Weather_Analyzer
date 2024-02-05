@@ -75,6 +75,9 @@ dependencies {
     //sdp
     implementation("com.github.Kaaveh:sdp-compose:1.1.0")
 
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
     implementation ("androidx.compose.runtime:runtime:1.6.0")
     implementation(project(path = ":data"))
     implementation(project(path = ":domain"))
