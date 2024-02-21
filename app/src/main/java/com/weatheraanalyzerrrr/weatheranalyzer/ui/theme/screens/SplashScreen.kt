@@ -27,8 +27,6 @@ import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -37,10 +35,11 @@ import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
 import com.weatheraanalyzerrrr.weatheranalyzer.R
+import com.weatheraanalyzerrrr.weatheranalyzer.Screen
 
 
 private const val TAG = "SplashScreen"
-@OptIn(ExperimentalPermissionsApi::class)
+
 @Composable
 fun SplashScreenAnimate(navController: NavController) {
 
@@ -54,10 +53,10 @@ fun SplashScreenAnimate(navController: NavController) {
     ) { activityResult ->
         if (activityResult.resultCode == Activity.RESULT_OK) {
             Log.d(TAG, "Accepted")
-            navController.navigate("main")
+            navController.navigate(Screen.MainScreen.route)
         } else {
             Log.d(TAG, "Denied")
-            navController.navigate("main")
+            navController.navigate(Screen.MainScreen.route)
         }
 
     }
@@ -77,7 +76,7 @@ fun SplashScreenAnimate(navController: NavController) {
                 settingResultRequest.launch(intentSenderRequest)
             },
             onEnabled = {
-                navController.navigate("main")
+                navController.navigate(Screen.MainScreen.route)
             }
         )
         delay(2000L)
@@ -101,6 +100,7 @@ fun SplashScreenAnimate(navController: NavController) {
 
     }
 }
+
 fun checkLocationSetting(
     context: Context,
     onDisabled: (IntentSenderRequest) -> Unit,
