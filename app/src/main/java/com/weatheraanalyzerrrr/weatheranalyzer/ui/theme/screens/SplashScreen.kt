@@ -1,6 +1,14 @@
 package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens
 
+
+import android.app.Activity
+import android.content.Context
+import android.content.IntentSender
+import android.util.Log
 import android.view.animation.OvershootInterpolator
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -18,15 +26,44 @@ import ir.kaaveh.sdpcompose.sdp
 import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsResponse
+import com.google.android.gms.location.SettingsClient
+import com.google.android.gms.tasks.Task
 import com.weatheraanalyzerrrr.weatheranalyzer.R
 
+
+private const val TAG = "SplashScreen"
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SplashScreenAnimate(navController: NavController) {
 
 
     val scale = remember { Animatable(0f) }
 
+    val context = LocalContext.current
+
+    val settingResultRequest = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { activityResult ->
+        if (activityResult.resultCode == Activity.RESULT_OK) {
+            Log.d(TAG, "Accepted")
+            navController.navigate("main")
+        } else {
+            Log.d(TAG, "Denied")
+            navController.navigate("main")
+        }
+
+    }
+
     LaunchedEffect(key1 = true) {
+
         scale.animateTo(targetValue = 0.5f, animationSpec = tween(
             durationMillis = 1000,
             easing = {
@@ -34,9 +71,17 @@ fun SplashScreenAnimate(navController: NavController) {
             }
 
         ))
-
+        checkLocationSetting(
+            context = context,
+            onDisabled = { intentSenderRequest ->
+                settingResultRequest.launch(intentSenderRequest)
+            },
+            onEnabled = {
+                navController.navigate("main")
+            }
+        )
         delay(2000L)
-        navController.navigate("main")
+
     }
 
     Box(
@@ -49,9 +94,45 @@ fun SplashScreenAnimate(navController: NavController) {
             modifier = Modifier
                 .width(450.sdp)
                 .height(450.sdp)
-                .scale(scale.value).align(Alignment.Center)
+                .scale(scale.value)
+                .align(Alignment.Center)
         )
 
 
     }
+}
+fun checkLocationSetting(
+    context: Context,
+    onDisabled: (IntentSenderRequest) -> Unit,
+    onEnabled: () -> Unit
+) {
+
+    val locationRequest = LocationRequest.create().apply {
+        interval = 1000
+        fastestInterval = 1000
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    }
+
+    val client: SettingsClient = LocationServices.getSettingsClient(context)
+    val builder: LocationSettingsRequest.Builder = LocationSettingsRequest
+        .Builder()
+        .addLocationRequest(locationRequest)
+
+    val gpsSettingTask: Task<LocationSettingsResponse> =
+        client.checkLocationSettings(builder.build())
+
+    gpsSettingTask.addOnSuccessListener { onEnabled() }
+    gpsSettingTask.addOnFailureListener { exception ->
+        if (exception is ResolvableApiException) {
+            try {
+                val intentSenderRequest = IntentSenderRequest
+                    .Builder(exception.resolution)
+                    .build()
+                onDisabled(intentSenderRequest)
+            } catch (sendEx: IntentSender.SendIntentException) {
+                // ignore here
+            }
+        }
+    }
+
 }
