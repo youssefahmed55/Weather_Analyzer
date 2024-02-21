@@ -18,6 +18,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.weatheraanalyzerrrr.weatheranalyzer.R
 import ir.kaaveh.sdpcompose.sdp
@@ -34,8 +37,12 @@ import ir.kaaveh.sdpcompose.ssp
 
 @Preview(showBackground = true, showSystemUi = true, device = "id:Nexus One")
 @Composable
-fun WeekForecast(navController: NavController? = null) {
+fun WeekForecast(
+    navController: NavController? = null,
+    viewModel: WeekForecastViewModel = hiltViewModel()
+) {
 
+    val cityNameState by viewModel.cityNameState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -46,14 +53,16 @@ fun WeekForecast(navController: NavController? = null) {
         horizontalAlignment = Alignment.Start
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            Image(imageVector = Icons.Default.ArrowBack,
+            Image(
+                imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Arrow Back",
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .clickable { navController?.popBackStack() },
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary))
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+            )
             Text(
-                text = "London",
+                text = cityNameState,
                 fontFamily = FontFamily(Font(R.font.poppins_bold, FontWeight.Bold)),
                 fontSize = 15.ssp,
                 color = MaterialTheme.colorScheme.primary,

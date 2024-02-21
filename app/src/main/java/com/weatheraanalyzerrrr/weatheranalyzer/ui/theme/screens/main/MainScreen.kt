@@ -1,12 +1,15 @@
 package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main
 
 import android.app.Activity
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import com.weatheraanalyzerrrr.weatheranalyzer.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,25 +19,37 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -45,93 +60,263 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.CurrentModelResponse
+import com.weatheraanalyzerrrr.domain.entity.hourlymodelresponse.Hourly
+import com.weatheraanalyzerrrr.weatheranalyzer.Screen
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.ViewModelStates
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main.util.SimpleDialog
 import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
 
+private const val TAG = "MainScreen"
+
+@OptIn(ExperimentalPermissionsApi::class)
 @Preview(showBackground = true, showSystemUi = true, device = "id:Nexus One")
 @Composable
-fun MainScreen(navController: NavController? = null) {
+fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = hiltViewModel()) {
     //BackPressHandler
     val activity = (LocalContext.current as? Activity)
     BackHandler {
         activity?.finish()
     }
 
+    val state by viewModel.currentWeatherModel.collectAsState()
+    val hourlyState by viewModel.hourlyModel.collectAsState()
+    val currentWeather = remember { mutableStateOf(CurrentModelResponse()) }
+    val hourlyModels = remember { mutableStateOf(emptyList<Hourly>()) }
+    val snackBarHostState = remember { SnackbarHostState() }
+    var showDialogState by remember { mutableStateOf(true) }
+    val textSearch by viewModel.textSearch.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val context = LocalContext.current
 
-    var searchTextFieldValue by remember {
-        mutableStateOf("")
+    val locationPermissions = rememberMultiplePermissionsState(
+        permissions = listOf(
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    )
+
+    LaunchedEffect(key1 = locationPermissions.allPermissionsGranted) {
+        if (locationPermissions.allPermissionsGranted) {
+            Log.d(TAG, "allPermissionsGranted")
+            showDialogState = false
+            viewModel.getCurrentLocation()
+        } else {
+            Log.d(TAG, "allPermissionsDenied")
+        }
+
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(top = 20.sdp, start = 10.sdp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 5.sdp, end = 10.sdp),
-            horizontalArrangement = Arrangement.spacedBy(10.sdp),
-            verticalAlignment = Alignment.CenterVertically
+
+    if (errorMessage.isNotEmpty()) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+    }
+
+
+    ObserverCurrentWeatherData(state, currentWeather, snackBarHostState)
+    ObserverHourlyWeatherData(hourlyState, hourlyModels, snackBarHostState)
+
+    Scaffold(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)
+        .padding(top = 20.sdp, start = 10.sdp),
+        snackbarHost = { SnackbarHost(snackBarHostState) }) { contentPadding ->
+        Box(
+            modifier = Modifier.fillMaxSize(),
         ) {
-            CustomSearchView(
-                searchTextFieldValue,
-                Modifier
-                    .background(
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                        CircleShape
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 5.sdp, end = 10.sdp),
+                    horizontalArrangement = Arrangement.spacedBy(10.sdp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CustomSearchView(
+                        textSearch,
+                        errorMessage,
+                        Modifier
+                            .background(
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
+                                CircleShape
+                            )
+                            .weight(2f), onValueChange = { text ->
+                            viewModel.setSearchText(text)
+                        })
+
+                    Image(
+                        modifier = Modifier.clickable {
+                            viewModel.setSearchText("")
+                            navController?.navigate(
+                                "${Screen.WeekForecastScreen.route}/${currentWeather.value.name}/${currentWeather.value.coord?.lat.toString()}/${currentWeather.value.coord?.lon.toString()}"
+                            )
+                        },
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = stringResource(R.string.date_range_icon),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                     )
-                    .weight(2f)
-            ) { text ->
-                searchTextFieldValue = text
+                }
+
+                Spacer(modifier = Modifier.size(10.sdp))
+                LocationTitle(currentWeather.value.name, Modifier.padding(start = 5.sdp))
+                Spacer(modifier = Modifier.size(10.sdp))
+                DateTitle(
+                    currentWeather.value.getDayFromTimeStamp(),
+                    modifier = Modifier.padding(start = 15.sdp)
+                )
+                Spacer(modifier = Modifier.size(30.sdp))
+
+                Column(modifier = Modifier.padding(start = 10.sdp, end = 10.sdp)) {
+                    TemperatureLayout(
+                        currentWeather.value.weather?.get(0)?.icon,
+                        currentWeather.value.main?.temp?.toInt(),
+                        currentWeather.value.weather?.get(0)?.description
+                    )
+                    Spacer(modifier = Modifier.size(15.sdp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        TemperatureFeature(
+                            stringResource(R.string.humidity),
+                            currentWeather.value.main?.humidity.toString() + " %"
+                        )
+                        TemperatureFeature(
+                            stringResource(R.string.feels_like),
+                            currentWeather.value.main?.feels_like?.toInt().toString() + " °",
+                            Alignment.End
+                        )
+                    }
+                    Spacer(modifier = Modifier.size(10.sdp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        TemperatureFeature(
+                            stringResource(R.string.pressure),
+                            currentWeather.value.main?.pressure.toString() + " " + stringResource(R.string.mbar)
+                        )
+                        TemperatureFeature(
+                            stringResource(R.string.wind),
+                            currentWeather.value.wind?.speed.toString() + " " + stringResource(R.string.km_hr),
+                            Alignment.End
+                        )
+                    }
+                    Spacer(modifier = Modifier.size(10.sdp))
+
+                }
+                NextHours(hourlyModels.value)
             }
 
-            Image(
-                modifier = Modifier.clickable { navController?.navigate("weekForecast") },
-                imageVector = Icons.Default.DateRange,
-                contentDescription = stringResource(R.string.date_range_icon),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+
+            SimpleDialog(showDialog = showDialogState,
+                stringResource(R.string.location_permission),
+                stringResource(R.string.we_need_location_permissions_for_this_application),
+                onClose = { showDialogState = false },
+                onAccept = {
+                    locationPermissions.launchMultiplePermissionRequest()
+                    showDialogState = false
+
+
+                },
+                modifier = Modifier.align(Alignment.Center)
             )
         }
 
-        Spacer(modifier = Modifier.size(10.sdp))
-        LocationTitle("Lagos, Nigeria", Modifier.padding(start = 5.sdp))
-        Spacer(modifier = Modifier.size(10.sdp))
-        DateTitle("1 August 2023", modifier = Modifier.padding(start = 15.sdp))
-        Spacer(modifier = Modifier.size(30.sdp))
 
-        Column(modifier = Modifier.padding(start = 10.sdp, end = 10.sdp)) {
-            TemperatureLayout("", "81°", "Mostly Clear")
-            Spacer(modifier = Modifier.size(15.sdp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TemperatureFeature(stringResource(R.string.humidity), "25%")
-                TemperatureFeature(stringResource(R.string.feels_like), "24°", Alignment.End)
-            }
-            Spacer(modifier = Modifier.size(10.sdp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TemperatureFeature(stringResource(R.string.pressure), "1008 mbar")
-                TemperatureFeature(stringResource(R.string.wind), "102km/hr", Alignment.End)
-            }
-            Spacer(modifier = Modifier.size(10.sdp))
+    }
+}
 
+
+@Composable
+fun ObserverHourlyWeatherData(
+    hourlyState: ViewModelStates<List<Hourly>>,
+    hourlyModels: MutableState<List<Hourly>>,
+    snackBarHostState: SnackbarHostState
+) {
+    LaunchedEffect(hourlyState) {
+        when (hourlyState) {
+            is ViewModelStates.Success -> {
+                hourlyModels.value = hourlyState.data
+            }
+
+            is ViewModelStates.Error -> {
+                Log.d(TAG, "Error Hourly")
+
+                hourlyModels.value = hourlyState.data ?: emptyList()
+
+                snackBarHostState
+                    .showSnackbar(
+                        message = hourlyState.message,
+                        actionLabel = "Skip",
+                        // Defaults to SnackbarDuration.Short
+                        duration = SnackbarDuration.Indefinite
+                    )
+            }
+
+            else -> {}
         }
-        NextHours()
     }
 }
 
 @Composable
-fun TemperatureLayout(imageResource: String, degree: String, statue: String) {
+fun ObserverCurrentWeatherData(
+    state: ViewModelStates<CurrentModelResponse>,
+    currentWeather: MutableState<CurrentModelResponse>,
+    snackBarHostState: SnackbarHostState
+) {
+
+    LaunchedEffect(state) {
+        when (state) {
+            is ViewModelStates.Success -> {
+                currentWeather.value =
+                    state.data
+            }
+
+            is ViewModelStates.Error -> {
+                Log.d(TAG, "Error Current")
+
+
+                state.data?.let {
+                    currentWeather.value = it
+                }
+
+                snackBarHostState
+                    .showSnackbar(
+                        message = state.message,
+                        actionLabel = "Skip",
+                        // Defaults to SnackbarDuration.Short
+                        duration = SnackbarDuration.Indefinite
+                    )
+
+
+            }
+
+            else -> {}
+        }
+
+
+    }
+
+
+}
+
+@Composable
+fun TemperatureLayout(imageResource: String?, degree: Int?, statue: String?) {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -139,20 +324,21 @@ fun TemperatureLayout(imageResource: String, degree: String, statue: String) {
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Image(
+        AsyncImage(
             modifier = Modifier.size(90.sdp),
-            painter = painterResource(id = R.drawable.ic_weather_logo),
+            model = "https://openweathermap.org/img/w/$imageResource.png",
+            error = painterResource(id = R.drawable.ic_weather_logo),
             contentDescription = stringResource(R.string.weather_statue_image)
         )
         Column(verticalArrangement = Arrangement.spacedBy(5.sdp)) {
             Text(
-                text = degree,
+                text = degree.toString() + " °",
                 fontFamily = FontFamily(Font(R.font.poppins_bold, FontWeight.Bold)),
                 fontSize = 15.ssp,
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = statue,
+                text = statue ?: "",
                 fontFamily = FontFamily(Font(R.font.poppins_semibold, FontWeight.SemiBold)),
                 fontSize = 15.ssp,
                 color = MaterialTheme.colorScheme.primary
@@ -175,7 +361,7 @@ fun DateTitle(date: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LocationTitle(locationText: String, modifier: Modifier = Modifier) {
+fun LocationTitle(locationText: String?, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth(),
@@ -188,25 +374,32 @@ fun LocationTitle(locationText: String, modifier: Modifier = Modifier) {
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
         )
         Text(
-            text = locationText,
+            text = locationText ?: "",
             fontFamily = FontFamily(Font(R.font.poppins_bold, FontWeight.Bold)),
             fontSize = 15.ssp,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(top = 5.sdp)
         )
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CustomSearchView(
     search: String,
+    errorMessage: String,
     modifier: Modifier = Modifier,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+
     OutlinedTextField(
         modifier = modifier,
         shape = CircleShape,
         value = search,
         onValueChange = onValueChange,
+        isError = errorMessage.isNotEmpty(),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search, contentDescription = stringResource(
@@ -225,12 +418,19 @@ fun CustomSearchView(
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Sentences,
-            imeAction = ImeAction.Search
-        )
+            imeAction = ImeAction.Search,
+
+            ),
+        trailingIcon = {
+            if (errorMessage.isNotEmpty())
+                Icon(Icons.Filled.Info, "error", tint = MaterialTheme.colorScheme.error)
+        },
+        keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() })
     )
 
 
 }
+
 
 @Composable
 fun TemperatureFeature(
@@ -257,7 +457,7 @@ fun TemperatureFeature(
 }
 
 @Composable
-fun NextHours() {
+fun NextHours(hourlyModels: List<Hourly>?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -274,24 +474,12 @@ fun NextHours() {
             horizontalArrangement = Arrangement.spacedBy(10.sdp),
             contentPadding = PaddingValues(end = 5.sdp)
         ) {
-
-            item {
-                HourWeather()
-            }
-            item {
-                HourWeather()
-            }
-            item {
-                HourWeather()
-            }
-            item {
-                HourWeather()
-            }
-            item {
-                HourWeather()
-            }
-            item {
-                HourWeather()
+            items(hourlyModels ?: emptyList()) {
+                HourWeather(
+                    it.getTimeFromTimeStamp(),
+                    it.weather?.get(0)?.icon,
+                    it.temp?.toInt().toString() + " °"
+                )
             }
         }
 
@@ -299,6 +487,9 @@ fun NextHours() {
 
 
 }
+
+
+
 
 
 

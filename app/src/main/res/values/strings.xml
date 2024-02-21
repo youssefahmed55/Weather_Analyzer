@@ -10,4 +10,8 @@
     <string name="location_icon">Location Icon</string>
     <string name="search_icon">Search Icon</string>
     <string name="next_week">Next Week</string>
+    <string name="mbar">mbar</string>
+    <string name="km_hr">km/hr</string>
+    <string name="location_permission">Location Permission</string>
+    <string name="we_need_location_permissions_for_this_application">We need location permissions for this application.</string>
 </resources>

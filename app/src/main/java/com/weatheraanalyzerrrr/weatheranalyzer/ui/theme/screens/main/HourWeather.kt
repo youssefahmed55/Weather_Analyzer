@@ -1,7 +1,6 @@
 package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main
 
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,13 +20,14 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import coil.compose.AsyncImage
 import com.weatheraanalyzerrrr.weatheranalyzer.R
 import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
 
 @Preview(showBackground = true)
 @Composable
-fun HourWeather(time: String = "04:00 am", image: String = "", degree: String = "24°") {
+fun HourWeather(time: String = "04:00 am", image: String? = "", degree: String = "24°") {
 
     Column(
         modifier = Modifier
@@ -47,9 +47,10 @@ fun HourWeather(time: String = "04:00 am", image: String = "", degree: String = 
             fontSize = 10.ssp,
             color = MaterialTheme.colorScheme.primary
         )
-        Image(
+        AsyncImage(
             modifier = Modifier.size(20.sdp),
-            painter = painterResource(id = R.drawable.ic_weather_logo),
+            model = "https://openweathermap.org/img/w/$image.png",
+            error = painterResource(id = R.drawable.ic_weather_logo),
             contentDescription = stringResource(
                 id = R.string.weather_statue_image
             )
