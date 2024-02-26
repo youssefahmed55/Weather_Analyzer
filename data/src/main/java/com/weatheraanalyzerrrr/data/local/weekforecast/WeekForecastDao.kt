@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.data.room.weekforecast
+package com.weatheraanalyzerrrr.data.local.weekforecast
 
 import androidx.room.Dao
 import androidx.room.Insert

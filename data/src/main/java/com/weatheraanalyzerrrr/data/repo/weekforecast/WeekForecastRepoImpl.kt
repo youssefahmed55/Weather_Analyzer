@@ -1,7 +1,7 @@
 package com.weatheraanalyzerrrr.data.repo.weekforecast
 
 import com.weatheraanalyzerrrr.data.remote.weekforecast.WeekForecastApiService
-import com.weatheraanalyzerrrr.data.room.weekforecast.WeekForecastDao
+import com.weatheraanalyzerrrr.data.local.weekforecast.WeekForecastDao
 import com.weatheraanalyzerrrr.domain.entity.dailymodelresponse.DailyModelResponse
 import com.weatheraanalyzerrrr.domain.repo.weekforecast.WeekForecastRepo
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.data.room.main
+package com.weatheraanalyzerrrr.data.local.main
 
 import androidx.room.Dao
 import androidx.room.Insert

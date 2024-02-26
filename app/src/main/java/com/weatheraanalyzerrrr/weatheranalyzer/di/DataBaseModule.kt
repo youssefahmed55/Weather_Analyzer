@@ -2,9 +2,9 @@ package com.weatheraanalyzerrrr.weatheranalyzer.di
 
 import android.app.Application
 import androidx.room.Room
-import com.weatheraanalyzerrrr.data.room.AppDatabase
-import com.weatheraanalyzerrrr.data.room.main.WeatherDao
-import com.weatheraanalyzerrrr.data.room.weekforecast.WeekForecastDao
+import com.weatheraanalyzerrrr.data.local.AppDatabase
+import com.weatheraanalyzerrrr.data.local.main.WeatherDao
+import com.weatheraanalyzerrrr.data.local.weekforecast.WeekForecastDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

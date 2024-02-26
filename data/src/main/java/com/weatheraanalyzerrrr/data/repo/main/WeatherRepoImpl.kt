@@ -1,7 +1,7 @@
 package com.weatheraanalyzerrrr.data.repo.main
 
 import com.weatheraanalyzerrrr.data.remote.main.MainApiService
-import com.weatheraanalyzerrrr.data.room.main.WeatherDao
+import com.weatheraanalyzerrrr.data.local.main.WeatherDao
 import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.CurrentModelResponse
 import com.weatheraanalyzerrrr.domain.entity.hourlymodelresponse.Hourly
 import com.weatheraanalyzerrrr.domain.repo.main.WeatherRepo
