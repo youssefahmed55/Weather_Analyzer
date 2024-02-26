@@ -76,9 +76,11 @@ class MainViewModel @Inject constructor(
         _errorMessage.value = ""
     }
 
-    init {
+    fun getDefaultLocation(){
         getCurrentWeather(30.0626, 31.2497)
         getHourly(30.0626, 31.2497)
+    }
+    init {
         observeSearchText()
     }
 
@@ -174,11 +176,15 @@ class MainViewModel @Inject constructor(
                 _currentWeatherModel.update { ViewModelStates.Success(data) }
                 _hourlyModel.update {
                     ViewModelStates.Success(
-                        getHourlyWeather(
-                            data.coord?.lat!!,
-                            data.coord?.lon!!,
-                            lang
-                        ).hourly!!
+                        data.coord?.lat?.let { it1 ->
+                            data.coord?.lon?.let { it2 ->
+                                getHourlyWeather(
+                                    it1,
+                                    it2,
+                                    lang
+                                ).hourly
+                            }
+                        }!!
                     )
                 }
             } catch (ex: Exception) {

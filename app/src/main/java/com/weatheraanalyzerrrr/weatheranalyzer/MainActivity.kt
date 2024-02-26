@@ -34,14 +34,12 @@ class MainActivity : ComponentActivity() {
 fun Weather() {
     val navHostController = rememberNavController()
 
-    NavHost(navController = navHostController, startDestination = "splash") {
+    NavHost(navController = navHostController, startDestination = Screen.SplashScreen.route) {
         composable(Screen.SplashScreen.route) { SplashScreenAnimate(navHostController) }
         composable(Screen.MainScreen.route) { MainScreen(navHostController) }
         composable(
-            "${Screen.WeekForecastScreen.route}/{cityName}/{lat}/{long}",
-            arguments = listOf(navArgument("cityName") { NavType.StringType },
-                navArgument("lat") { NavType.StringType },
-                navArgument("long") { NavType.StringType }
+            "${Screen.WeekForecastScreen.route}/{currentWeather}",
+            arguments = listOf(navArgument("currentWeather") { NavType.StringType }
             )
         ) { WeekForecast(navHostController) }
     }

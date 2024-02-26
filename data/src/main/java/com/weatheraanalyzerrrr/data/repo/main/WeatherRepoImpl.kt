@@ -1,6 +1,6 @@
 package com.weatheraanalyzerrrr.data.repo.main
 
-import com.weatheraanalyzerrrr.data.remote.main.ApiService
+import com.weatheraanalyzerrrr.data.remote.main.MainApiService
 import com.weatheraanalyzerrrr.data.room.main.WeatherDao
 import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.CurrentModelResponse
 import com.weatheraanalyzerrrr.domain.entity.hourlymodelresponse.Hourly
@@ -8,7 +8,7 @@ import com.weatheraanalyzerrrr.domain.repo.main.WeatherRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class WeatherRepoImpl(private val apiService: ApiService, private val weatherDao: WeatherDao) :
+class WeatherRepoImpl(private val mainApiService: MainApiService, private val weatherDao: WeatherDao) :
     WeatherRepo {
     //Remote
     override suspend fun getCurrentCityNameAndWeatherFromRemote(
@@ -16,7 +16,7 @@ class WeatherRepoImpl(private val apiService: ApiService, private val weatherDao
         lon: Double,
         lang: String
     ) = withContext(Dispatchers.IO) {
-        return@withContext apiService.getCurrentCityNameAndWeatherRequest(lat, lon, lang)
+        return@withContext mainApiService.getCurrentCityNameAndWeatherRequest(lat, lon, lang)
     }
 
     override suspend fun getCurrentCityNameAndWeatherFromRoom() = withContext(Dispatchers.IO) {
@@ -28,7 +28,7 @@ class WeatherRepoImpl(private val apiService: ApiService, private val weatherDao
         lon: Double,
         lang: String
     ) = withContext(Dispatchers.IO) {
-        return@withContext apiService.getWeatherHourlyRequest(lat, lon, lang)
+        return@withContext mainApiService.getWeatherHourlyRequest(lat, lon, lang)
     }
 
     override suspend fun getHourlyWeatherFromRoom(): List<Hourly> = withContext(Dispatchers.IO) {
@@ -40,7 +40,7 @@ class WeatherRepoImpl(private val apiService: ApiService, private val weatherDao
         cityName: String,
         lang: String
     ) = withContext(Dispatchers.IO) {
-        return@withContext apiService.getCurrentWeatherByNameRequest(cityName, lang)
+        return@withContext mainApiService.getCurrentWeatherByNameRequest(cityName, lang)
     }
 
 

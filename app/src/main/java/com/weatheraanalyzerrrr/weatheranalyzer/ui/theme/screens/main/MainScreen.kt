@@ -65,6 +65,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.gson.Gson
 import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.CurrentModelResponse
 import com.weatheraanalyzerrrr.domain.entity.hourlymodelresponse.Hourly
 import com.weatheraanalyzerrrr.weatheranalyzer.Screen
@@ -102,13 +103,14 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
         )
     )
 
-    LaunchedEffect(key1 = locationPermissions.allPermissionsGranted) {
+    LaunchedEffect(key1 = locationPermissions.allPermissionsGranted,key2 = viewModel.currentWeatherModel) {
         if (locationPermissions.allPermissionsGranted) {
             Log.d(TAG, "allPermissionsGranted")
             showDialogState = false
             viewModel.getCurrentLocation()
         } else {
             Log.d(TAG, "allPermissionsDenied")
+            viewModel.getDefaultLocation()
         }
 
     }
@@ -161,8 +163,10 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
                     Image(
                         modifier = Modifier.clickable {
                             viewModel.setSearchText("")
+                            val userJson = Gson().toJson(currentWeather.value)
+                            Log.d(TAG, "MainScreen: $userJson")
                             navController?.navigate(
-                                "${Screen.WeekForecastScreen.route}/${currentWeather.value.name}/${currentWeather.value.coord?.lat.toString()}/${currentWeather.value.coord?.lon.toString()}"
+                                "${Screen.WeekForecastScreen.route}/${userJson}"
                             )
                         },
                         imageVector = Icons.Default.DateRange,
@@ -223,7 +227,8 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
             }
 
 
-            SimpleDialog(showDialog = showDialogState,
+            SimpleDialog(
+                showDialog = showDialogState,
                 stringResource(R.string.location_permission),
                 stringResource(R.string.we_need_location_permissions_for_this_application),
                 onClose = { showDialogState = false },
@@ -332,7 +337,7 @@ fun TemperatureLayout(imageResource: String?, degree: Int?, statue: String?) {
         )
         Column(verticalArrangement = Arrangement.spacedBy(5.sdp)) {
             Text(
-                text = degree.toString() + " °",
+                text = if (degree != null) "$degree °" else " °",
                 fontFamily = FontFamily(Font(R.font.poppins_bold, FontWeight.Bold)),
                 fontSize = 15.ssp,
                 color = MaterialTheme.colorScheme.primary
@@ -447,7 +452,7 @@ fun TemperatureFeature(
             color = MaterialTheme.colorScheme.secondary
         )
         Text(
-            text = resultValue,
+            text = if(!resultValue.contains("null")) resultValue else "",
             fontFamily = FontFamily(Font(R.font.poppins_semibold, FontWeight.SemiBold)),
             fontSize = 10.ssp,
             color = MaterialTheme.colorScheme.primary
@@ -464,7 +469,7 @@ fun NextHours(hourlyModels: List<Hourly>?) {
             .padding(start = 10.sdp), verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Next Hours",
+            text = stringResource(R.string.next_hours),
             fontFamily = FontFamily(Font(R.font.poppins_semibold, FontWeight.SemiBold)),
             fontSize = 15.ssp,
             color = MaterialTheme.colorScheme.primary
@@ -487,6 +492,8 @@ fun NextHours(hourlyModels: List<Hourly>?) {
 
 
 }
+
+
 
 
 

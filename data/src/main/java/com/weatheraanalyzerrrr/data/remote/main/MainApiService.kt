@@ -9,7 +9,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 
-interface ApiService {
+interface MainApiService {
 
     //Get Current City Name And Weather
     @GET("weather?units=$units&appid=${BuildConfig.API_KEY}")
