@@ -14,4 +14,5 @@
     <string name="km_hr">km/hr</string>
     <string name="location_permission">Location Permission</string>
     <string name="we_need_location_permissions_for_this_application">We need location permissions for this application.</string>
+    <string name="next_hours">Next Hours</string>
 </resources>

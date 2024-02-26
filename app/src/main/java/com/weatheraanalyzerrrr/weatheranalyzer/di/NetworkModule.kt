@@ -1,7 +1,8 @@
 package com.weatheraanalyzerrrr.weatheranalyzer.di
 
 
-import com.weatheraanalyzerrrr.data.remote.main.ApiService
+import com.weatheraanalyzerrrr.data.remote.main.MainApiService
+import com.weatheraanalyzerrrr.data.remote.weekforecast.WeekForecastApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,7 +39,13 @@ object NetworkModule {
 
   @Provides
   @Singleton
-  fun provideApiService(retrofit: Retrofit): ApiService {
-     return retrofit.create(ApiService::class.java)
+  fun provideApiService(retrofit: Retrofit): MainApiService {
+     return retrofit.create(MainApiService::class.java)
   }
+
+    @Provides
+    @Singleton
+    fun provideWeekForecastApiService(retrofit: Retrofit): WeekForecastApiService {
+        return retrofit.create(WeekForecastApiService::class.java)
+    }
 }

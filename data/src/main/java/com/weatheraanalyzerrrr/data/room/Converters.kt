@@ -9,7 +9,9 @@ import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.Main
 import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.Sys
 import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.Weather
 import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.Wind
+import com.weatheraanalyzerrrr.domain.entity.hourlymodelresponse.Daily
 import com.weatheraanalyzerrrr.domain.entity.hourlymodelresponse.Rain
+
 
 class Converters {
 
@@ -96,6 +98,21 @@ class Converters {
             s, object : TypeToken<Rain?>() {}.type
         )
     }
+
+    @TypeConverter
+    fun fromListDailyToString(value: List<Daily>?): String? {
+        return Gson().toJson(value)
+    }
+
+    @TypeConverter
+    fun fromStringToListDaily(s: String?): List<Daily>? {
+        return Gson().fromJson<List<Daily>>(
+            s, object : TypeToken<List<Daily>?>() {}.type
+        )
+    }
+
+
+
 
 
 }
