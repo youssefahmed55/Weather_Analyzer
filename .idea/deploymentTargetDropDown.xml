@@ -2,16 +2,55 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="WeatherDaoTest">
-        <State />
+      <entry key="MainScreenKtTest">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\Youssef\.android\avd\Pixel_7_Pro_API_VanillaIceCream.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-02-28T19:57:48.486619400Z" />
+        </State>
       </entry>
-      <entry key="WeatherDaoTest (1)">
-        <State />
-      </entry>
-      <entry key="WeekForecastDaoTest">
-        <State />
+      <entry key="MainScreenKtTest (1)">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\Youssef\.android\avd\Pixel_3a_API_34_extension_level_7_x86_64.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-02-28T07:18:50.823374800Z" />
+        </State>
       </entry>
       <entry key="app">
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\Youssef\.android\avd\Pixel_7_Pro_API_VanillaIceCream.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-02-28T19:13:13.913884700Z" />
+        </State>
+      </entry>
+      <entry key="clickOnCalenderIcon_RemoveSearchText()">
         <State />
       </entry>
     </value>

@@ -2,6 +2,7 @@ package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.weekforecast
 
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,10 +27,10 @@ private const val TAG = "WeekForecastViewModel"
 
 @HiltViewModel
 class WeekForecastViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
     private val getDailyResponseWeather: GetDailyWeather,
     private val getDailyResponseWeatherR: GetDailyWeatherR,
-    private val insertDailyResponseWeatherR: InsertDailyWeatherR
+    private val insertDailyResponseWeatherR: InsertDailyWeatherR,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _cityNameState = MutableStateFlow("")
@@ -60,8 +61,8 @@ class WeekForecastViewModel @Inject constructor(
         }
 
     }
-
-    private fun getDailyWeather(
+    @VisibleForTesting
+    internal fun getDailyWeather(
         lat: Double,
         lon: Double,
         lang: String = Locale.getDefault().language

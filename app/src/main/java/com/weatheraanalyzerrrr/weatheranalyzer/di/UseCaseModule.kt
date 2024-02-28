@@ -9,6 +9,7 @@ import com.weatheraanalyzerrrr.domain.usecase.main.GetCurrentCityNameAndWeather
 import com.weatheraanalyzerrrr.domain.usecase.main.GetCurrentCityNameAndWeatherR
 import com.weatheraanalyzerrrr.domain.usecase.main.GetHourlyWeather
 import com.weatheraanalyzerrrr.domain.usecase.main.GetHourlyWeatherR
+import com.weatheraanalyzerrrr.domain.usecase.main.GetTheCurrentLocation
 import com.weatheraanalyzerrrr.domain.usecase.main.InsertCurrentWeatherR
 import com.weatheraanalyzerrrr.domain.usecase.main.InsertHourlyWeatherR
 import com.weatheraanalyzerrrr.domain.usecase.weekforecast.GetDailyWeather
@@ -78,5 +79,9 @@ object UseCaseModule {
         return InsertDailyWeatherR(weekForecastRepo)
     }
 
+    @Provides
+    fun provideGetTheCurrentLocationUseCase(weatherRepo: WeatherRepo): GetTheCurrentLocation {
+        return GetTheCurrentLocation(weatherRepo)
+    }
 
 }

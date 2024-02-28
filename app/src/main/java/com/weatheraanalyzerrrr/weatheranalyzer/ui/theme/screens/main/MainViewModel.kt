@@ -2,6 +2,7 @@ package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main
 
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -14,10 +15,10 @@ import com.weatheraanalyzerrrr.domain.usecase.main.GetCurrentCityNameAndWeather
 import com.weatheraanalyzerrrr.domain.usecase.main.GetCurrentCityNameAndWeatherR
 import com.weatheraanalyzerrrr.domain.usecase.main.GetHourlyWeather
 import com.weatheraanalyzerrrr.domain.usecase.main.GetHourlyWeatherR
+import com.weatheraanalyzerrrr.domain.usecase.main.GetTheCurrentLocation
 import com.weatheraanalyzerrrr.domain.usecase.main.InsertCurrentWeatherR
 import com.weatheraanalyzerrrr.domain.usecase.main.InsertHourlyWeatherR
 import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.ViewModelStates
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main.util.LocationTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,6 @@ private const val TAG = "MainViewModel"
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val locationTracker: LocationTracker,
     private val getCurrentCityNameAndWeather: GetCurrentCityNameAndWeather,
     private val getHourlyWeather: GetHourlyWeather,
     private val getCurrentWeatherByName: GetCurrentWeatherByName,
@@ -43,7 +43,8 @@ class MainViewModel @Inject constructor(
     private val getHourlyWeatherR: GetHourlyWeatherR,
     private val insertCurrentWeatherR: InsertCurrentWeatherR,
     private val insertHourlyWeatherR: InsertHourlyWeatherR,
-    private val deleteHourlyWeatherDataBaseR: DeleteHourlyWeatherDataBaseR
+    private val deleteHourlyWeatherDataBaseR: DeleteHourlyWeatherDataBaseR,
+    private val getTheCurrentLocation: GetTheCurrentLocation
 ) : ViewModel() {
 
     private val _currentWeatherModel =
@@ -62,10 +63,12 @@ class MainViewModel @Inject constructor(
 
     fun getCurrentLocation() {
         viewModelScope.launch {
-            val location = locationTracker.getCurrentLocation()
-            location?.latitude?.let {
-                getCurrentWeather(it, location.longitude)
-                getHourly(it, location.longitude)
+            val location = getTheCurrentLocation()
+            if (location?.latitude != null){
+                getCurrentWeather(location.latitude, location.longitude)
+                getHourly(location.latitude, location.longitude)
+            }else{
+                getDefaultLocation()
             }
         }
     }
@@ -96,8 +99,8 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-    private fun getCurrentWeather(
+    @VisibleForTesting
+    internal fun getCurrentWeather(
         lat: Double,
         lon: Double,
         lang: String = Locale.getDefault().language
@@ -134,8 +137,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-
-    private fun getHourly(lat: Double, lon: Double, lang: String = Locale.getDefault().language) {
+    @VisibleForTesting
+    internal fun getHourly(lat: Double, lon: Double, lang: String = Locale.getDefault().language) {
         viewModelScope.launch {
             try {
                 val data = getHourlyWeather(lat, lon, lang)
@@ -168,8 +171,8 @@ class MainViewModel @Inject constructor(
 
         }
     }
-
-    private fun getCurrentWeatherByN(name: String, lang: String = Locale.getDefault().language) {
+    @VisibleForTesting
+    internal fun getCurrentWeatherByN(name: String, lang: String = Locale.getDefault().language) {
         viewModelScope.launch {
             try {
                 val data = getCurrentWeatherByName(name, lang)

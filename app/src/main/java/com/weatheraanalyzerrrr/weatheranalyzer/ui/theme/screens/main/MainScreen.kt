@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -94,7 +95,6 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
     var showDialogState by remember { mutableStateOf(true) }
     val textSearch by viewModel.textSearch.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
-    val context = LocalContext.current
 
     val locationPermissions = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -115,11 +115,20 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
 
     }
 
+       //Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+        LaunchedEffect(key1 =  errorMessage){
+            if (errorMessage.isNotEmpty()) {
+                snackBarHostState
+                    .showSnackbar(
+                        message = errorMessage,
+                        // Defaults to SnackbarDuration.Short
+                        duration = SnackbarDuration.Short
+                    )
+
+            }
+        }
 
 
-    if (errorMessage.isNotEmpty()) {
-        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-    }
 
 
     ObserverCurrentWeatherData(state, currentWeather, snackBarHostState)
@@ -152,6 +161,7 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
                         textSearch,
                         errorMessage,
                         Modifier
+                            .testTag("searchTextFieldTag")
                             .background(
                                 MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
                                 CircleShape
@@ -161,14 +171,16 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
                         })
 
                     Image(
-                        modifier = Modifier.clickable {
-                            viewModel.setSearchText("")
-                            val userJson = Gson().toJson(currentWeather.value)
-                            Log.d(TAG, "MainScreen: $userJson")
-                            navController?.navigate(
-                                "${Screen.WeekForecastScreen.route}/${userJson}"
-                            )
-                        },
+                        modifier = Modifier
+                            .testTag("calenderIcon")
+                            .clickable {
+                                viewModel.setSearchText("")
+                                val userJson = Gson().toJson(currentWeather.value)
+                                Log.d(TAG, "MainScreen: $userJson")
+                                navController?.navigate(
+                                    "${Screen.WeekForecastScreen.route}/${userJson}"
+                                )
+                            },
                         imageVector = Icons.Default.DateRange,
                         contentDescription = stringResource(R.string.date_range_icon),
                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
@@ -269,7 +281,7 @@ fun ObserverHourlyWeatherData(
                         message = hourlyState.message,
                         actionLabel = "Skip",
                         // Defaults to SnackbarDuration.Short
-                        duration = SnackbarDuration.Indefinite
+                        duration = SnackbarDuration.Short
                     )
             }
 
@@ -305,7 +317,7 @@ fun ObserverCurrentWeatherData(
                         message = state.message,
                         actionLabel = "Skip",
                         // Defaults to SnackbarDuration.Short
-                        duration = SnackbarDuration.Indefinite
+                        duration = SnackbarDuration.Short
                     )
 
 
@@ -357,7 +369,7 @@ fun TemperatureLayout(imageResource: String?, degree: Int?, statue: String?) {
 fun DateTitle(date: String, modifier: Modifier = Modifier) {
 
     Text(
-        modifier = modifier,
+        modifier = modifier.testTag("Date"),
         text = date,
         fontFamily = FontFamily(Font(R.font.poppins_semibold, FontWeight.SemiBold)),
         color = MaterialTheme.colorScheme.secondary,
@@ -383,7 +395,9 @@ fun LocationTitle(locationText: String?, modifier: Modifier = Modifier) {
             fontFamily = FontFamily(Font(R.font.poppins_bold, FontWeight.Bold)),
             fontSize = 15.ssp,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(top = 5.sdp)
+            modifier = Modifier
+                .testTag("cityName_main")
+                .padding(top = 5.sdp)
         )
     }
 }

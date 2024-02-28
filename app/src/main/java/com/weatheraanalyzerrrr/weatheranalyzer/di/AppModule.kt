@@ -4,8 +4,8 @@ package com.weatheraanalyzerrrr.weatheranalyzer.di
 import android.app.Application
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main.util.DefaultLocationTracker
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main.util.LocationTracker
+import com.weatheraanalyzerrrr.util.DefaultLocationTracker
+import com.weatheraanalyzerrrr.util.LocationTracker
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

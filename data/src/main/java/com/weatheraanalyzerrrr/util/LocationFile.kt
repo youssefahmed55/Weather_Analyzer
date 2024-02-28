@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main.util
+package com.weatheraanalyzerrrr.util
 
 import android.app.Application
 import android.content.Context

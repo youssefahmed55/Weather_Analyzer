@@ -1,38 +1,43 @@
 package com.weatheraanalyzerrrr.weatheranalyzer.data.weekforecast
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import com.weatheraanalyzerrrr.data.local.AppDatabase
-import com.weatheraanalyzerrrr.data.local.main.WeatherDao
 import com.weatheraanalyzerrrr.data.local.weekforecast.WeekForecastDao
-import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.CurrentModelResponse
 import com.weatheraanalyzerrrr.domain.entity.dailymodelresponse.DailyModelResponse
 import com.weatheraanalyzerrrr.domain.entity.hourlymodelresponse.Daily
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
+import javax.inject.Inject
+import javax.inject.Named
 
-@RunWith(AndroidJUnit4::class)
+@ExperimentalCoroutinesApi
+@SmallTest
+@HiltAndroidTest
 class WeekForecastDaoTest {
-    @JvmField
-    @Rule
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var database: AppDatabase
-    private lateinit var dao: WeekForecastDao
+    @Inject
+    @Named("test_db")
+    lateinit var database: AppDatabase
+
+    @Inject
+    @Named("test_weekForecastDao")
+    lateinit var dao: WeekForecastDao
 
     @Before
     fun setup() {
-        database = Room.inMemoryDatabaseBuilder(
-            ApplicationProvider.getApplicationContext(),
-            AppDatabase::class.java
-        ).allowMainThreadQueries().build()
-        dao = database.weekForecastDao()
+        hiltRule.inject()
     }
 
     @After

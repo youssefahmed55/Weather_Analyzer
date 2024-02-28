@@ -16,7 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.weatheraanalyzerrrr.weatheranalyzer.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -49,6 +49,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    testOptions{
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -64,17 +67,24 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
     implementation("androidx.navigation:navigation-compose:2.7.6")
     implementation("com.google.android.gms:play-services-location:21.1.0")
+    implementation("com.google.ar:core:1.41.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    //For runBlockingTest, CoroutineDispatcher etc.
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
+
 
     //Navigation
     implementation("androidx.navigation:navigation-compose:2.7.6")
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.6")
+
 
     //sdp
     implementation("com.github.Kaaveh:sdp-compose:1.1.0")
@@ -108,6 +118,14 @@ dependencies {
     implementation("com.google.maps.android:maps-compose:4.3.0")
 
     implementation("com.google.accompanist:accompanist-permissions:0.23.1")
+
+
+    // Import the Compose BOM
+    implementation(platform("androidx.compose:compose-bom:2023.06.01"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.06.01"))
+
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48.1")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48.1")
 
     implementation(project(path = ":data"))
     implementation(project(path = ":domain"))

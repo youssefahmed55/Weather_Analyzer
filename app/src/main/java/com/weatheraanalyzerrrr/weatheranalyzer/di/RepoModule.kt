@@ -9,6 +9,7 @@ import com.weatheraanalyzerrrr.data.local.main.WeatherDao
 import com.weatheraanalyzerrrr.data.local.weekforecast.WeekForecastDao
 import com.weatheraanalyzerrrr.domain.repo.main.WeatherRepo
 import com.weatheraanalyzerrrr.domain.repo.weekforecast.WeekForecastRepo
+import com.weatheraanalyzerrrr.util.LocationTracker
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,8 +19,8 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object RepoModule {
    @Provides
-   fun provideWeatherRepo(mainApiService: MainApiService, weatherDao: WeatherDao): WeatherRepo{
-       return WeatherRepoImpl(mainApiService,weatherDao)
+   fun provideWeatherRepo(mainApiService: MainApiService, weatherDao: WeatherDao, locationTracker: LocationTracker): WeatherRepo{
+       return WeatherRepoImpl(mainApiService,weatherDao, locationTracker)
    }
 
     @Provides

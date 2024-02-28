@@ -47,7 +47,7 @@ fun Weather() {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun WeatherPreview() {
     WeatherAnalyzerTheme {
         Weather()
     }
