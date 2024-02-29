@@ -18,7 +18,7 @@ class FakeWeatherRepo : WeatherRepo {
         lon: Double,
         lang: String
     ): CurrentModelResponse {
-        return CurrentModelResponse(coord = Coord(lat,lon))
+        return CurrentModelResponse(coord = Coord(lat, lon))
     }
 
     override suspend fun getCurrentWeatherByNameRequestFromRemote(
@@ -34,11 +34,13 @@ class FakeWeatherRepo : WeatherRepo {
         lon: Double,
         lang: String
     ): HourlyModelResponse {
-        return HourlyModelResponse(lat=lat, lon = lon)
+        return HourlyModelResponse(lat = lat, lon = lon)
     }
+
     override suspend fun getCurrentCityNameAndWeatherFromRoom(): CurrentModelResponse {
         return currentWeatherData.value
     }
+
     override suspend fun getHourlyWeatherFromRoom(): List<Hourly> {
         return hourlyListData.value
     }

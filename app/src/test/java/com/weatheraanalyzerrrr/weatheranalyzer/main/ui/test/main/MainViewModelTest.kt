@@ -29,21 +29,29 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class MainViewModelTest {
 
-
+    //Initialize hiltRule
     @get:Rule
     val mainCoroutineRule = MainCoroutineRule()
 
+    //Initialize job
     private val job = Job()
+
+    //Initialize testDispatcher
     private val testDispatcher = StandardTestDispatcher()
+
+    //Initialize testScope
     private val testScope = TestScope(job + testDispatcher)
 
+    //Initialize instantTaskExecutorRule
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
+
 
     private lateinit var viewModel: MainViewModel
 
     @Before
     fun setup() {
+        //Initialize viewModel
         viewModel = MainViewModel(
             GetCurrentCityNameAndWeather(FakeWeatherRepo()),
             GetHourlyWeather(FakeWeatherRepo()),
@@ -56,11 +64,11 @@ class MainViewModelTest {
             GetTheCurrentLocation(FakeWeatherRepo())
         )
     }
+
     @Test
     fun testViewModel_Loading() = runTest {
-      // Create an empty collector for the StateFlow
+        // Create an empty collector for the StateFlow
         testScope.launch {
-
             viewModel.currentWeatherModel.collect()
             viewModel.hourlyModel.collect()
 
@@ -71,16 +79,16 @@ class MainViewModelTest {
         assert(ViewModelStates.Loading == viewModel.currentWeatherModel.value)
         assert(ViewModelStates.Loading == viewModel.hourlyModel.value)
     }
+
     @Test
     fun testViewModel_success() = runTest {
-      // Create an empty collector for the StateFlow
-
+        // Create an empty collector for the StateFlow
         testScope.launch {
             viewModel.currentWeatherModel.collect()
             viewModel.hourlyModel.collect()
         }
 
-
+        // Can assert initial value
         viewModel.getCurrentWeather(-0.1257, 51.5085)
         assert(viewModel.currentWeatherModel.value is ViewModelStates.Success)
 
