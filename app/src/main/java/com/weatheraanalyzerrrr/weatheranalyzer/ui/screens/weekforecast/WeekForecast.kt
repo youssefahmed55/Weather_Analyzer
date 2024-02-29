@@ -68,6 +68,8 @@ fun WeekForecast(
     //Initialize snackBarHostState
     val snackBarHostState = remember { SnackbarHostState() }
 
+    val backState = remember { mutableStateOf(false) }
+
 
     ObserverDailyWeatherData(dailyState, dailyModels, snackBarHostState)
     Scaffold(modifier = Modifier
@@ -88,7 +90,12 @@ fun WeekForecast(
                     contentDescription = "Arrow Back",
                     modifier = Modifier
                         .align(Alignment.CenterStart)
-                        .clickable { navController?.popBackStack() },
+                        .clickable {
+                            if (!backState.value) {
+                                navController?.popBackStack()
+                                backState.value = true
+                            }
+                                   },
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
                 Text(
