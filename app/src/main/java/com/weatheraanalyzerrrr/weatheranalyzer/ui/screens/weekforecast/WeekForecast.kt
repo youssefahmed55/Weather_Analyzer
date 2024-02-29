@@ -95,7 +95,7 @@ fun WeekForecast(
                                 navController?.popBackStack()
                                 backState.value = true
                             }
-                                   },
+                        },
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
                 Text(
