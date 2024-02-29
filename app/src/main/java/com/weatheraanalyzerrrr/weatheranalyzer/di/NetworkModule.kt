@@ -17,31 +17,31 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-  @Provides
-  @Singleton
-  fun provideOkHttp(): OkHttpClient{
-      return OkHttpClient.Builder()
-          .connectTimeout(20,TimeUnit.SECONDS)
-          .readTimeout(20,TimeUnit.SECONDS)
-          .retryOnConnectionFailure(false)
-          .build()
-  }
+    @Provides
+    @Singleton
+    fun provideOkHttp(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(false)
+            .build()
+    }
 
-  @Provides
-  @Singleton
-  fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit{
-      return Retrofit.Builder()
-          .baseUrl("https://api.openweathermap.org/data/2.5/")
-          .client(okHttpClient)
-          .addConverterFactory(GsonConverterFactory.create())
-          .build()
-  }
+    @Provides
+    @Singleton
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://api.openweathermap.org/data/2.5/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
-  @Provides
-  @Singleton
-  fun provideApiService(retrofit: Retrofit): MainApiService {
-     return retrofit.create(MainApiService::class.java)
-  }
+    @Provides
+    @Singleton
+    fun provideApiService(retrofit: Retrofit): MainApiService {
+        return retrofit.create(MainApiService::class.java)
+    }
 
     @Provides
     @Singleton

@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens
+package com.weatheraanalyzerrrr.weatheranalyzer.ui.screens
 
 
 import android.app.Activity
@@ -35,7 +35,6 @@ import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
 import com.weatheraanalyzerrrr.weatheranalyzer.R
-import com.weatheraanalyzerrrr.weatheranalyzer.Screen
 
 
 private const val TAG = "SplashScreen"
@@ -43,20 +42,22 @@ private const val TAG = "SplashScreen"
 @Composable
 fun SplashScreenAnimate(navController: NavController) {
 
-
+    //Initialize scale
     val scale = remember { Animatable(0f) }
 
+    //Initialize context
     val context = LocalContext.current
 
+    //Check Location Enabled
     val settingResultRequest = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { activityResult ->
         if (activityResult.resultCode == Activity.RESULT_OK) {
             Log.d(TAG, "Accepted")
-            navController.navigate(Screen.MainScreen.route)
+            navController.navigate(Screen.MainScreen.route)  //Navigate to MainScreen
         } else {
             Log.d(TAG, "Denied")
-            navController.navigate(Screen.MainScreen.route)
+            navController.navigate(Screen.MainScreen.route)  //Navigate to MainScreen
         }
 
     }
@@ -73,10 +74,10 @@ fun SplashScreenAnimate(navController: NavController) {
         checkLocationSetting(
             context = context,
             onDisabled = { intentSenderRequest ->
-                settingResultRequest.launch(intentSenderRequest)
+                settingResultRequest.launch(intentSenderRequest)  //launch intentSenderRequest
             },
             onEnabled = {
-                navController.navigate(Screen.MainScreen.route)
+                navController.navigate(Screen.MainScreen.route)   //Navigate to MainScreen
             }
         )
         delay(2000L)

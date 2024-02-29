@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.weekforecast
+package com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.weekforecast
 
 
 import android.util.Log
@@ -13,7 +13,7 @@ import com.weatheraanalyzerrrr.domain.entity.dailymodelresponse.DailyModelRespon
 import com.weatheraanalyzerrrr.domain.usecase.weekforecast.GetDailyWeather
 import com.weatheraanalyzerrrr.domain.usecase.weekforecast.GetDailyWeatherR
 import com.weatheraanalyzerrrr.domain.usecase.weekforecast.InsertDailyWeatherR
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.ViewModelStates
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.ViewModelStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,13 +33,16 @@ class WeekForecastViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    //Initialize _cityNameState
     private val _cityNameState = MutableStateFlow("")
     val cityNameState = _cityNameState.asStateFlow()
 
+    //Initialize _dailyModel
     private val _dailyModel =
         MutableStateFlow<ViewModelStates<DailyModelResponse>>(ViewModelStates.Loading)
     val dailyModel = _dailyModel.asStateFlow()
 
+    //Initialize argsCurrent
     private val argsCurrent: String? = savedStateHandle["currentWeather"]
 
 
@@ -56,11 +59,12 @@ class WeekForecastViewModel @Inject constructor(
 
             if (lat != null && long != null) {
                 Log.d(TAG, "$lat $long")
-                getDailyWeather(lat, long)
+                getDailyWeather(lat, long)     //Get Daily Weather
             }
         }
 
     }
+
     @VisibleForTesting
     internal fun getDailyWeather(
         lat: Double,
@@ -69,9 +73,13 @@ class WeekForecastViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                val data = getDailyResponseWeather(lat, lon, lang)
-                insertDailyResponseWeatherR(data)
-                _dailyModel.update { ViewModelStates.Success(getDailyResponseWeatherR()!!) }
+                val data = getDailyResponseWeather(
+                    lat,
+                    lon,
+                    lang
+                )                           //Get Daily Response
+                insertDailyResponseWeatherR(data)                                            //Insert Daily Response In Room
+                _dailyModel.update { ViewModelStates.Success(getDailyResponseWeatherR()!!) } //Get Daily Response From Room
             } catch (ex: Exception) {
                 if (ex is HttpException) {
                     val error: ErrorResponse? = Gson().fromJson(
@@ -82,12 +90,12 @@ class WeekForecastViewModel @Inject constructor(
                     _dailyModel.update {
                         ViewModelStates.Error(
                             error?.message ?: "",
-                            getDailyResponseWeatherR()
+                            getDailyResponseWeatherR()      //Get Daily Response From Room
                         )
                     }
                 } else {
                     Log.e(TAG, "${ex.message}")
-                    val data = getDailyResponseWeatherR()
+                    val data = getDailyResponseWeatherR()    //Get Daily Response From Room
                     _dailyModel.update {
 
                         if (data?.lat == lat && data.lon == lon) {

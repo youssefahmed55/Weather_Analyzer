@@ -11,8 +11,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.weatheraanalyzerrrr.weatheranalyzer.MainActivity
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.MainActivity
 import com.weatheraanalyzerrrr.weatheranalyzer.R
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.main.MainScreen
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest

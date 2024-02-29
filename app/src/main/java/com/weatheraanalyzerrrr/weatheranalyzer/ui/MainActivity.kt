@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.weatheranalyzer
+package com.weatheraanalyzerrrr.weatheranalyzer.ui
 
 
 import android.os.Bundle
@@ -11,10 +11,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.Screen
 import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.WeatherAnalyzerTheme
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.SplashScreenAnimate
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main.MainScreen
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.weekforecast.WeekForecast
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.SplashScreenAnimate
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.main.MainScreen
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.weekforecast.WeekForecast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

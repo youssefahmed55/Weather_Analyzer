@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.weatheranalyzer
+package com.weatheraanalyzerrrr.weatheranalyzer.ui.screens
 
 
 sealed class Screen(val route: String) {

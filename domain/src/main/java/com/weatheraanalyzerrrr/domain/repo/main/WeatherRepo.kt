@@ -28,7 +28,7 @@ interface WeatherRepo {
     suspend fun insertHourlyWeatherDataBase(hourlyList: List<Hourly>)
     suspend fun deleteHourlyWeatherDataBase()
 
-    suspend fun getTheCurrentLocation() :  Location?
+    suspend fun getTheCurrentLocation(): Location?
 
 
     suspend fun getCurrentWeatherByNameRequestFromRemote(

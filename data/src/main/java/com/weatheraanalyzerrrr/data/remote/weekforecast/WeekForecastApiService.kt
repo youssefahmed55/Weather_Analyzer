@@ -11,6 +11,10 @@ interface WeekForecastApiService {
 
     //Get Weather Degree Of Next Week
     @GET("onecall?units=$units&appid=${BuildConfig.API_KEY}&exclude=$excludeDays")
-    suspend fun getWeatherOfSevenDaysRequest(@Query("lat") lat : Double, @Query("lon") lon : Double, @Query("lang") lang :String) : DailyModelResponse
+    suspend fun getWeatherOfSevenDaysRequest(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("lang") lang: String
+    ): DailyModelResponse
 
 }

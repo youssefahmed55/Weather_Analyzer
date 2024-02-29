@@ -18,13 +18,20 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object RepoModule {
-   @Provides
-   fun provideWeatherRepo(mainApiService: MainApiService, weatherDao: WeatherDao, locationTracker: LocationTracker): WeatherRepo{
-       return WeatherRepoImpl(mainApiService,weatherDao, locationTracker)
-   }
+    @Provides
+    fun provideWeatherRepo(
+        mainApiService: MainApiService,
+        weatherDao: WeatherDao,
+        locationTracker: LocationTracker
+    ): WeatherRepo {
+        return WeatherRepoImpl(mainApiService, weatherDao, locationTracker)
+    }
 
     @Provides
-    fun provideWeekForecastRepo( weekForecastApiService: WeekForecastApiService, weekForecastDao: WeekForecastDao): WeekForecastRepo{
-        return WeekForecastRepoImpl(weekForecastApiService,weekForecastDao)
+    fun provideWeekForecastRepo(
+        weekForecastApiService: WeekForecastApiService,
+        weekForecastDao: WeekForecastDao
+    ): WeekForecastRepo {
+        return WeekForecastRepoImpl(weekForecastApiService, weekForecastDao)
     }
 }

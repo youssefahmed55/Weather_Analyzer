@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class FakeWeekForecastRepo : WeekForecastRepo {
 
-    val currentWeatherData = MutableStateFlow(DailyModelResponse())
+    private val currentWeatherData = MutableStateFlow(DailyModelResponse())
 
     override suspend fun getDailyWeatherFromRemote(
         lat: Double,
@@ -17,7 +17,7 @@ class FakeWeekForecastRepo : WeekForecastRepo {
         return DailyModelResponse(lat = lat, lon = lon)
     }
 
-    override suspend fun getDailyWeatherFromRoom(): DailyModelResponse? {
+    override suspend fun getDailyWeatherFromRoom(): DailyModelResponse {
         return currentWeatherData.value
     }
 

@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens
+package com.weatheraanalyzerrrr.weatheranalyzer.ui.screens
 
 sealed class ViewModelStates<out T> {
 

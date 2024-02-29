@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class FakeWeatherRepo : WeatherRepo {
 
-    val currentWeatherData = MutableStateFlow(CurrentModelResponse())
-    val hourlyListData = MutableStateFlow<List<Hourly>>(emptyList())
+    private val currentWeatherData = MutableStateFlow(CurrentModelResponse())
+    private val hourlyListData = MutableStateFlow<List<Hourly>>(emptyList())
 
     override suspend fun getCurrentCityNameAndWeatherFromRemote(
         lat: Double,

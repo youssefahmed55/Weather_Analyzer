@@ -12,8 +12,8 @@ import com.weatheraanalyzerrrr.domain.usecase.main.InsertCurrentWeatherR
 import com.weatheraanalyzerrrr.domain.usecase.main.InsertHourlyWeatherR
 import com.weatheraanalyzerrrr.weatheranalyzer.main.MainCoroutineRule
 import com.weatheraanalyzerrrr.weatheranalyzer.main.repo.main.FakeWeatherRepo
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.ViewModelStates
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main.MainViewModel
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.ViewModelStates
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.main.MainViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect

@@ -1,6 +1,6 @@
 package com.weatheraanalyzerrrr.data.repo.main
 
-import android.location.Location
+
 import com.weatheraanalyzerrrr.data.remote.main.MainApiService
 import com.weatheraanalyzerrrr.data.local.main.WeatherDao
 import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.CurrentModelResponse
@@ -10,7 +10,11 @@ import com.weatheraanalyzerrrr.util.LocationTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class WeatherRepoImpl(private val mainApiService: MainApiService, private val weatherDao: WeatherDao, private val locationTracker: LocationTracker) :
+class WeatherRepoImpl(
+    private val mainApiService: MainApiService,
+    private val weatherDao: WeatherDao,
+    private val locationTracker: LocationTracker
+) :
     WeatherRepo {
     //Remote
     override suspend fun getCurrentCityNameAndWeatherFromRemote(
@@ -61,7 +65,8 @@ class WeatherRepoImpl(private val mainApiService: MainApiService, private val we
         weatherDao.deleteAllHourlyWeather()
     }
 
-    override suspend fun getTheCurrentLocation() = withContext(Dispatchers.IO) {locationTracker.getCurrentLocation()}
+    override suspend fun getTheCurrentLocation() =
+        withContext(Dispatchers.IO) { locationTracker.getCurrentLocation() }
 
 
 }

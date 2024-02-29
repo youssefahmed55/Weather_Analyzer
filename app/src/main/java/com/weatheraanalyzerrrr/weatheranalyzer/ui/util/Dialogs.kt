@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main.util
+package com.weatheraanalyzerrrr.weatheranalyzer.ui.util
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button

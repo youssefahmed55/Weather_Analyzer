@@ -1,8 +1,7 @@
-package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main
+package com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.main
 
 import android.app.Activity
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import com.weatheraanalyzerrrr.weatheranalyzer.R
@@ -69,9 +68,9 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.gson.Gson
 import com.weatheraanalyzerrrr.domain.entity.currentmodelresponse.CurrentModelResponse
 import com.weatheraanalyzerrrr.domain.entity.hourlymodelresponse.Hourly
-import com.weatheraanalyzerrrr.weatheranalyzer.Screen
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.ViewModelStates
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main.util.SimpleDialog
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.Screen
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.ViewModelStates
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.util.SimpleDialog
 import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
 
@@ -84,18 +83,28 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
     //BackPressHandler
     val activity = (LocalContext.current as? Activity)
     BackHandler {
-        activity?.finish()
+        activity?.finish() //Finish Activity
     }
 
-    val state by viewModel.currentWeatherModel.collectAsState()
+
+    //Initialize currentWeatherState
+    val currentWeatherState by viewModel.currentWeatherModel.collectAsState()
+    //Initialize hourlyState
     val hourlyState by viewModel.hourlyModel.collectAsState()
+    //Initialize currentWeather
     val currentWeather = remember { mutableStateOf(CurrentModelResponse()) }
+    //Initialize hourlyModels
     val hourlyModels = remember { mutableStateOf(emptyList<Hourly>()) }
+    //Initialize snackBarHostState
     val snackBarHostState = remember { SnackbarHostState() }
+    //Initialize showDialogState
     var showDialogState by remember { mutableStateOf(true) }
+    //Initialize textSearch
     val textSearch by viewModel.textSearch.collectAsState()
+    //Initialize errorMessage
     val errorMessage by viewModel.errorMessage.collectAsState()
 
+    //Initialize locationPermissions To Check Location Permissions
     val locationPermissions = rememberMultiplePermissionsState(
         permissions = listOf(
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -103,35 +112,40 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
         )
     )
 
-    LaunchedEffect(key1 = locationPermissions.allPermissionsGranted,key2 = viewModel.currentWeatherModel) {
+
+    //Check Location Permissions
+    LaunchedEffect(
+        key1 = locationPermissions.allPermissionsGranted,
+        key2 = viewModel.currentWeatherModel
+    ) {
         if (locationPermissions.allPermissionsGranted) {
             Log.d(TAG, "allPermissionsGranted")
-            showDialogState = false
-            viewModel.getCurrentLocation()
+            showDialogState = false         //Set False to showDialogState
+            viewModel.getCurrentLocation()  //Get Current Location
         } else {
             Log.d(TAG, "allPermissionsDenied")
-            viewModel.getDefaultLocation()
+            viewModel.getDefaultLocation()  //Get Default Location
         }
 
     }
 
-       //Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-        LaunchedEffect(key1 =  errorMessage){
-            if (errorMessage.isNotEmpty()) {
-                snackBarHostState
-                    .showSnackbar(
-                        message = errorMessage,
-                        // Defaults to SnackbarDuration.Short
-                        duration = SnackbarDuration.Short
-                    )
+    //Check Error Message Is Not Empty
+    LaunchedEffect(key1 = errorMessage) {
+        if (errorMessage.isNotEmpty()) {
+            snackBarHostState
+                .showSnackbar(
+                    message = errorMessage,
+                    // Defaults to SnackBarDuration.Short
+                    duration = SnackbarDuration.Short
+                )
 
-            }
         }
+    }
 
 
-
-
-    ObserverCurrentWeatherData(state, currentWeather, snackBarHostState)
+    //Observer Current Weather Data
+    ObserverCurrentWeatherData(currentWeatherState, currentWeather, snackBarHostState)
+    //Observer Hourly Weather Data
     ObserverHourlyWeatherData(hourlyState, hourlyModels, snackBarHostState)
 
     Scaffold(modifier = Modifier
@@ -280,7 +294,7 @@ fun ObserverHourlyWeatherData(
                     .showSnackbar(
                         message = hourlyState.message,
                         actionLabel = "Skip",
-                        // Defaults to SnackbarDuration.Short
+                        // Defaults to SnackBarDuration.Short
                         duration = SnackbarDuration.Short
                     )
             }
@@ -316,7 +330,7 @@ fun ObserverCurrentWeatherData(
                     .showSnackbar(
                         message = state.message,
                         actionLabel = "Skip",
-                        // Defaults to SnackbarDuration.Short
+                        // Defaults to SnackBarDuration.Short
                         duration = SnackbarDuration.Short
                     )
 
@@ -466,7 +480,7 @@ fun TemperatureFeature(
             color = MaterialTheme.colorScheme.secondary
         )
         Text(
-            text = if(!resultValue.contains("null")) resultValue else "",
+            text = if (!resultValue.contains("null")) resultValue else "",
             fontFamily = FontFamily(Font(R.font.poppins_semibold, FontWeight.SemiBold)),
             fontSize = 10.ssp,
             color = MaterialTheme.colorScheme.primary

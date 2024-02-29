@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main
+package com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.main
 
 
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.main
+package com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.main
 
 
 import android.util.Log
@@ -18,7 +18,7 @@ import com.weatheraanalyzerrrr.domain.usecase.main.GetHourlyWeatherR
 import com.weatheraanalyzerrrr.domain.usecase.main.GetTheCurrentLocation
 import com.weatheraanalyzerrrr.domain.usecase.main.InsertCurrentWeatherR
 import com.weatheraanalyzerrrr.domain.usecase.main.InsertHourlyWeatherR
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.ViewModelStates
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.ViewModelStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,28 +47,32 @@ class MainViewModel @Inject constructor(
     private val getTheCurrentLocation: GetTheCurrentLocation
 ) : ViewModel() {
 
+    //Initialize _currentWeatherModel
     private val _currentWeatherModel =
         MutableStateFlow<ViewModelStates<CurrentModelResponse>>(ViewModelStates.Loading)
     val currentWeatherModel = _currentWeatherModel.asStateFlow()
 
+    //Initialize _hourlyModel
     private val _hourlyModel =
         MutableStateFlow<ViewModelStates<List<Hourly>>>(ViewModelStates.Loading)
     val hourlyModel = _hourlyModel.asStateFlow()
 
+    //Initialize _textSearch
     private val _textSearch = MutableStateFlow("")
     val textSearch = _textSearch.asStateFlow()
 
+    //Initialize _errorMessage
     private val _errorMessage = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
 
     fun getCurrentLocation() {
         viewModelScope.launch {
             val location = getTheCurrentLocation()
-            if (location?.latitude != null){
-                getCurrentWeather(location.latitude, location.longitude)
-                getHourly(location.latitude, location.longitude)
-            }else{
-                getDefaultLocation()
+            if (location?.latitude != null) {
+                getCurrentWeather(location.latitude, location.longitude) //Get Current Weather
+                getHourly(location.latitude, location.longitude)         //Get Hourly Weather
+            } else {
+                getDefaultLocation()     //Get Default Location
             }
         }
     }
@@ -79,10 +83,11 @@ class MainViewModel @Inject constructor(
         _errorMessage.value = ""
     }
 
-    fun getDefaultLocation(){
+    fun getDefaultLocation() {
         getCurrentWeather(30.0626, 31.2497)
         getHourly(30.0626, 31.2497)
     }
+
     init {
         observeSearchText()
     }
@@ -93,12 +98,13 @@ class MainViewModel @Inject constructor(
             // if the user stops typing for 2000ms, the item will be emitted
             textSearch.debounce(2000).distinctUntilChanged().collect { query ->
                 if (query.trim().isNotEmpty())
-                    getCurrentWeatherByN(query)
+                    getCurrentWeatherByN(query) // Get Current Weather By City Name
                 else
                     _errorMessage.value = ""
             }
         }
     }
+
     @VisibleForTesting
     internal fun getCurrentWeather(
         lat: Double,
@@ -107,9 +113,13 @@ class MainViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                val data = getCurrentCityNameAndWeather(lat, lon, lang)
-                insertCurrentWeatherR(data)
-                _currentWeatherModel.update { ViewModelStates.Success(getCurrentCityNameAndWeatherR()) }
+                val data = getCurrentCityNameAndWeather(
+                    lat,
+                    lon,
+                    lang
+                )                                  // Get Current Weather
+                insertCurrentWeatherR(data)                                                              // Insert Current Weather in Room
+                _currentWeatherModel.update { ViewModelStates.Success(getCurrentCityNameAndWeatherR()) } // Get Current Weather From Room
             } catch (ex: Exception) {
                 if (ex is HttpException) {
                     val error: ErrorResponse? = Gson().fromJson(
@@ -120,7 +130,7 @@ class MainViewModel @Inject constructor(
                     _currentWeatherModel.update {
                         ViewModelStates.Error(
                             error?.message ?: "",
-                            getCurrentCityNameAndWeatherR()
+                            getCurrentCityNameAndWeatherR()    // Get Current Weather From Room
                         )
                     }
                 } else {
@@ -128,7 +138,7 @@ class MainViewModel @Inject constructor(
                     _currentWeatherModel.update {
                         ViewModelStates.Error(
                             "Please Check Internet Connection (Problem Get Data From Host)",
-                            getCurrentCityNameAndWeatherR()
+                            getCurrentCityNameAndWeatherR()    // Get Current Weather From Room
                         )
                     }
                 }
@@ -141,10 +151,11 @@ class MainViewModel @Inject constructor(
     internal fun getHourly(lat: Double, lon: Double, lang: String = Locale.getDefault().language) {
         viewModelScope.launch {
             try {
-                val data = getHourlyWeather(lat, lon, lang)
-                deleteHourlyWeatherDataBaseR()
-                data.hourly?.let { insertHourlyWeatherR(it) }
-                _hourlyModel.update { ViewModelStates.Success(getHourlyWeatherR()) }
+                val data =
+                    getHourlyWeather(lat, lon, lang)                           // Get Hourly Weather
+                deleteHourlyWeatherDataBaseR()                                        // Delete Hourly Weather List From Room
+                data.hourly?.let { insertHourlyWeatherR(it) }                         // Insert Hourly Weather List In Room
+                _hourlyModel.update { ViewModelStates.Success(getHourlyWeatherR()) }  // Get Hourly Weather List From Room
             } catch (ex: Exception) {
                 if (ex is HttpException) {
                     val error: ErrorResponse? = Gson().fromJson(
@@ -155,7 +166,7 @@ class MainViewModel @Inject constructor(
                     _hourlyModel.update {
                         ViewModelStates.Error(
                             error?.message ?: "",
-                            getHourlyWeatherR()
+                            getHourlyWeatherR()   // Get Hourly Weather List From Room
                         )
                     }
                 } else {
@@ -163,7 +174,7 @@ class MainViewModel @Inject constructor(
                     _hourlyModel.update {
                         ViewModelStates.Error(
                             "Please Check Internet Connection (Problem Get Data From Host)",
-                            getHourlyWeatherR()
+                            getHourlyWeatherR()   // Get Hourly Weather List From Room
                         )
                     }
                 }
@@ -171,11 +182,13 @@ class MainViewModel @Inject constructor(
 
         }
     }
+
     @VisibleForTesting
     internal fun getCurrentWeatherByN(name: String, lang: String = Locale.getDefault().language) {
         viewModelScope.launch {
             try {
-                val data = getCurrentWeatherByName(name, lang)
+                val data =
+                    getCurrentWeatherByName(name, lang)                  // Get Current Weather
                 _currentWeatherModel.update { ViewModelStates.Success(data) }
                 _hourlyModel.update {
                     ViewModelStates.Success(
@@ -187,7 +200,7 @@ class MainViewModel @Inject constructor(
                                     lang
                                 ).hourly
                             }
-                        }!!
+                        }!!        // Get Hourly Weather
                     )
                 }
             } catch (ex: Exception) {
@@ -197,11 +210,11 @@ class MainViewModel @Inject constructor(
                         ErrorResponse::class.java
                     )
                     Log.e(TAG, "${error?.message}  //${error?.cod} ")
-                    _errorMessage.value = error?.message ?: ""
+                    _errorMessage.value = error?.message ?: ""              //Set Error Value
                 } else {
                     Log.e(TAG, "${ex.message}")
                     _errorMessage.value =
-                        "Please Check Internet Connection (Problem Get Data From Host)"
+                        "Please Check Internet Connection (Problem Get Data From Host)"  //Set Error Value
                 }
             }
 

@@ -7,8 +7,8 @@ import com.weatheraanalyzerrrr.domain.usecase.weekforecast.GetDailyWeatherR
 import com.weatheraanalyzerrrr.domain.usecase.weekforecast.InsertDailyWeatherR
 import com.weatheraanalyzerrrr.weatheranalyzer.main.MainCoroutineRule
 import com.weatheraanalyzerrrr.weatheranalyzer.main.repo.weekforecast.FakeWeekForecastRepo
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.ViewModelStates
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.weekforecast.WeekForecastViewModel
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.ViewModelStates
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.weekforecast.WeekForecastViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect

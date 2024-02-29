@@ -1,4 +1,4 @@
-package com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.weekforecast
+package com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.weekforecast
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -46,7 +46,7 @@ import coil.compose.AsyncImage
 import com.weatheraanalyzerrrr.domain.entity.dailymodelresponse.DailyModelResponse
 import com.weatheraanalyzerrrr.domain.entity.hourlymodelresponse.Daily
 import com.weatheraanalyzerrrr.weatheranalyzer.R
-import com.weatheraanalyzerrrr.weatheranalyzer.ui.theme.screens.ViewModelStates
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.screens.ViewModelStates
 import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
 
@@ -59,10 +59,13 @@ fun WeekForecast(
     viewModel: WeekForecastViewModel = hiltViewModel()
 ) {
 
+    //Initialize cityNameState
     val cityNameState by viewModel.cityNameState.collectAsState()
-
+    //Initialize dailyState
     val dailyState by viewModel.dailyModel.collectAsState()
+    //Initialize dailyModels
     val dailyModels = remember { mutableStateOf(emptyList<Daily>()) }
+    //Initialize snackBarHostState
     val snackBarHostState = remember { SnackbarHostState() }
 
 
@@ -93,7 +96,9 @@ fun WeekForecast(
                     fontFamily = FontFamily(Font(R.font.poppins_bold, FontWeight.Bold)),
                     fontSize = 15.ssp,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.testTag("cityNameWeekForecast").align(Alignment.Center)
+                    modifier = Modifier
+                        .testTag("cityNameWeekForecast")
+                        .align(Alignment.Center)
                 )
             }
             Spacer(modifier = Modifier.size(30.sdp))
@@ -133,7 +138,7 @@ fun ObserverDailyWeatherData(
 
             is ViewModelStates.Error -> {
                 Log.d(TAG, "Error Hourly")
-                val data = dailyState.data?.daily
+                val data = dailyState.data?.daily    //Get Room DataBase
 
                 data?.let { dailyModels.value = it }
 
@@ -141,8 +146,8 @@ fun ObserverDailyWeatherData(
                     .showSnackbar(
                         message = dailyState.message,
                         actionLabel = "Skip",
-                        // Defaults to SnackbarDuration.Short
-                        duration = SnackbarDuration.Indefinite
+                        // Defaults to SnackBarDuration.Short
+                        duration = SnackbarDuration.Short
                     )
             }
 
