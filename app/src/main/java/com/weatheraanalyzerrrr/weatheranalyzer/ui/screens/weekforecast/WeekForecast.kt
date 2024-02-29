@@ -67,7 +67,7 @@ fun WeekForecast(
     val dailyModels = remember { mutableStateOf(emptyList<Daily>()) }
     //Initialize snackBarHostState
     val snackBarHostState = remember { SnackbarHostState() }
-
+    //Initialize backState
     val backState = remember { mutableStateOf(false) }
 
 
