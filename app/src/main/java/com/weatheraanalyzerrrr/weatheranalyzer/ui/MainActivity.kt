@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             WeatherAnalyzerTheme {
                 Weather()
+
             }
         }
     }

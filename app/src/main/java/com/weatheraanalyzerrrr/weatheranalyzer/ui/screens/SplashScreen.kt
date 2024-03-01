@@ -3,10 +3,13 @@ package com.weatheraanalyzerrrr.weatheranalyzer.ui.screens
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.IntentSender
+import android.net.Uri
 import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
@@ -18,15 +21,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
-import ir.kaaveh.sdpcompose.sdp
-import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -35,6 +40,9 @@ import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
 import com.weatheraanalyzerrrr.weatheranalyzer.R
+import com.weatheraanalyzerrrr.weatheranalyzer.ui.util.SimpleDialog
+import ir.kaaveh.sdpcompose.sdp
+import kotlinx.coroutines.delay
 
 
 private const val TAG = "SplashScreen"
@@ -48,19 +56,44 @@ fun SplashScreenAnimate(navController: NavController) {
     //Initialize context
     val context = LocalContext.current
 
-    //Check Location Enabled
+
+    //Initialize showDialogState
+    var showDialogState by remember { mutableStateOf(false) }
+
+    //Initialize settingResultRequest To Check Location Enabled
     val settingResultRequest = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { activityResult ->
+
         if (activityResult.resultCode == Activity.RESULT_OK) {
+
             Log.d(TAG, "Accepted")
-            navController.navigate(Screen.MainScreen.route)  //Navigate to MainScreen
+            showDialogState = true
         } else {
             Log.d(TAG, "Denied")
+            showDialogState = false
             navController.navigate(Screen.MainScreen.route)  //Navigate to MainScreen
+
         }
 
     }
+
+    //Initialize startForResult To Check Back From Google Maps App
+    val startForResult = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.d(TAG, "Accepted")
+            showDialogState = false
+            navController.navigate(Screen.MainScreen.route)  //Navigate to MainScreen
+        } else {
+            Log.d(TAG, "Denied")
+            showDialogState = false
+            navController.navigate(Screen.MainScreen.route)  //Navigate to MainScreen
+        }
+    }
+
+
 
     LaunchedEffect(key1 = true) {
 
@@ -77,7 +110,7 @@ fun SplashScreenAnimate(navController: NavController) {
                 settingResultRequest.launch(intentSenderRequest)  //launch intentSenderRequest
             },
             onEnabled = {
-                navController.navigate(Screen.MainScreen.route)   //Navigate to MainScreen
+                showDialogState = true
             }
         )
         delay(2000L)
@@ -96,6 +129,25 @@ fun SplashScreenAnimate(navController: NavController) {
                 .height(450.sdp)
                 .scale(scale.value)
                 .align(Alignment.Center)
+        )
+
+        SimpleDialog(
+            showDialog = showDialogState,
+            stringResource(R.string.location_permission),
+            stringResource(R.string.it_is_required_to_run_the_google_map_application_to_find_your_location),
+            onClose = {
+                showDialogState = false
+                navController.navigate(Screen.MainScreen.route)  //Navigate to MainScreen
+            },
+            onAccept = {
+                startForResult.launch(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("http://maps.google.com/maps")
+                    )
+                ) //Intent To Google Maps App
+            },
+            modifier = Modifier.align(Alignment.Center)
         )
 
 
