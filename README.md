@@ -141,14 +141,14 @@ androidTestImplementation(platform("androidx.compose:compose-bom:2023.06.01"))
 ## View a video showing the app
 
 
-https://github.com/youssefahmed55/Weather_Analyzer/assets/99625111/ffdd0155-72da-4c38-a680-8d3425baeb95
+
+https://github.com/youssefahmed55/Weather_Analyzer/assets/99625111/33129914-a8df-42ca-8ce8-cf048f90164f
+
 
 
 ## Download Apk And Contact
 
-- Apk : 
-
-- Google Play : 
+- Apk : https://www.mediafire.com/file/pbkk9xnsixfcb23/Weather+Analyzer.apk/file
 
 - Contact : youssefahmed505505@gmail.com , joussefahmed2012@gmail.com
 
