@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -67,11 +68,13 @@ fun WeekForecast(
     val dailyModels = remember { mutableStateOf(emptyList<Daily>()) }
     //Initialize snackBarHostState
     val snackBarHostState = remember { SnackbarHostState() }
+    //Initialize showProgressState
+    val showProgressState = remember { mutableStateOf(false) }
     //Initialize backState
     val backState = remember { mutableStateOf(false) }
 
 
-    ObserverDailyWeatherData(dailyState, dailyModels, snackBarHostState)
+    ObserverDailyWeatherData(dailyState, dailyModels, snackBarHostState, showProgressState)
     Scaffold(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background)
@@ -116,7 +119,9 @@ fun WeekForecast(
                 color = MaterialTheme.colorScheme.primary,
             )
             Spacer(modifier = Modifier.size(20.sdp))
-
+            if (showProgressState.value) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            }
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(dailyModels.value) {
                     WeekForecastItem(it, Modifier.padding(bottom = 5.sdp))
@@ -134,16 +139,19 @@ fun WeekForecast(
 fun ObserverDailyWeatherData(
     dailyState: ViewModelStates<DailyModelResponse>,
     dailyModels: MutableState<List<Daily>>,
-    snackBarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState,
+    showProgressState: MutableState<Boolean>
 ) {
     LaunchedEffect(dailyState) {
         when (dailyState) {
             is ViewModelStates.Success -> {
+                showProgressState.value = false
                 val data = dailyState.data.daily
                 data?.let { dailyModels.value = it }
             }
 
             is ViewModelStates.Error -> {
+                showProgressState.value = false
                 Log.d(TAG, "Error Hourly")
                 val data = dailyState.data?.daily    //Get Room DataBase
 
@@ -158,7 +166,9 @@ fun ObserverDailyWeatherData(
                     )
             }
 
-            else -> {}
+            else -> {
+                showProgressState.value = true
+            }
         }
     }
 }

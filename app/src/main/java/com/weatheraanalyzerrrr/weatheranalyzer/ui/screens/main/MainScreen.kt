@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -99,6 +100,10 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
     val snackBarHostState = remember { SnackbarHostState() }
     //Initialize showDialogState
     var showDialogState by remember { mutableStateOf(true) }
+    //Initialize showProgressState1
+    val showProgressState1 = remember { mutableStateOf(false) }
+    //Initialize showProgressState2
+    val showProgressState2 = remember { mutableStateOf(false) }
     //Initialize textSearch
     val textSearch by viewModel.textSearch.collectAsState()
     //Initialize errorMessage
@@ -144,9 +149,14 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
 
 
     //Observer Current Weather Data
-    ObserverCurrentWeatherData(currentWeatherState, currentWeather, snackBarHostState)
+    ObserverCurrentWeatherData(
+        currentWeatherState,
+        currentWeather,
+        snackBarHostState,
+        showProgressState1
+    )
     //Observer Hourly Weather Data
-    ObserverHourlyWeatherData(hourlyState, hourlyModels, snackBarHostState)
+    ObserverHourlyWeatherData(hourlyState, hourlyModels, snackBarHostState, showProgressState2)
 
     Scaffold(modifier = Modifier
         .fillMaxSize()
@@ -202,20 +212,28 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
                 }
 
                 Spacer(modifier = Modifier.size(10.sdp))
-                LocationTitle(currentWeather.value.name, Modifier.padding(start = 5.sdp))
+                LocationTitle(
+                    locationText = currentWeather.value.name,
+                    modifier = Modifier.padding(start = 5.sdp)
+                )
                 Spacer(modifier = Modifier.size(10.sdp))
                 DateTitle(
-                    currentWeather.value.getDayFromTimeStamp(),
+                    date = currentWeather.value.getDayFromTimeStamp(),
                     modifier = Modifier.padding(start = 15.sdp)
                 )
                 Spacer(modifier = Modifier.size(30.sdp))
 
                 Column(modifier = Modifier.padding(start = 10.sdp, end = 10.sdp)) {
-                    TemperatureLayout(
-                        currentWeather.value.weather?.get(0)?.icon,
-                        currentWeather.value.main?.temp?.toInt(),
-                        currentWeather.value.weather?.get(0)?.description
-                    )
+                    Box {
+                        TemperatureLayout(
+                            currentWeather.value.weather?.get(0)?.icon,
+                            currentWeather.value.main?.temp?.toInt(),
+                            currentWeather.value.weather?.get(0)?.description
+                        )
+                        if (showProgressState1.value)
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+
                     Spacer(modifier = Modifier.size(15.sdp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -249,7 +267,12 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
                     Spacer(modifier = Modifier.size(10.sdp))
 
                 }
-                NextHours(hourlyModels.value)
+                Box {
+                    NextHours(hourlyModels.value)
+                    if (showProgressState2.value)
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+
             }
 
 
@@ -277,17 +300,19 @@ fun MainScreen(navController: NavController? = null, viewModel: MainViewModel = 
 fun ObserverHourlyWeatherData(
     hourlyState: ViewModelStates<List<Hourly>>,
     hourlyModels: MutableState<List<Hourly>>,
-    snackBarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState,
+    showProgressState2: MutableState<Boolean>
 ) {
     LaunchedEffect(hourlyState) {
         when (hourlyState) {
             is ViewModelStates.Success -> {
+                showProgressState2.value = false
                 hourlyModels.value = hourlyState.data
             }
 
             is ViewModelStates.Error -> {
                 Log.d(TAG, "Error Hourly")
-
+                showProgressState2.value = false
                 hourlyModels.value = hourlyState.data ?: emptyList()
 
                 snackBarHostState
@@ -299,7 +324,9 @@ fun ObserverHourlyWeatherData(
                     )
             }
 
-            else -> {}
+            else -> {
+                showProgressState2.value = true
+            }
         }
     }
 }
@@ -308,19 +335,21 @@ fun ObserverHourlyWeatherData(
 fun ObserverCurrentWeatherData(
     state: ViewModelStates<CurrentModelResponse>,
     currentWeather: MutableState<CurrentModelResponse>,
-    snackBarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState,
+    showProgressState1: MutableState<Boolean>
 ) {
 
     LaunchedEffect(state) {
         when (state) {
             is ViewModelStates.Success -> {
+                showProgressState1.value = false
                 currentWeather.value =
                     state.data
             }
 
             is ViewModelStates.Error -> {
                 Log.d(TAG, "Error Current")
-
+                showProgressState1.value = false
 
                 state.data?.let {
                     currentWeather.value = it
@@ -337,7 +366,9 @@ fun ObserverCurrentWeatherData(
 
             }
 
-            else -> {}
+            else -> {
+                showProgressState1.value = true
+            }
         }
 
 
@@ -347,7 +378,7 @@ fun ObserverCurrentWeatherData(
 }
 
 @Composable
-fun TemperatureLayout(imageResource: String?, degree: Int?, statue: String?) {
+fun TemperatureLayout(imageResource: String? = "", degree: Int? = 0, statue: String? = "") {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -380,7 +411,7 @@ fun TemperatureLayout(imageResource: String?, degree: Int?, statue: String?) {
 }
 
 @Composable
-fun DateTitle(date: String, modifier: Modifier = Modifier) {
+fun DateTitle(modifier: Modifier = Modifier, date: String = "") {
 
     Text(
         modifier = modifier.testTag("Date"),
@@ -392,7 +423,7 @@ fun DateTitle(date: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LocationTitle(locationText: String?, modifier: Modifier = Modifier) {
+fun LocationTitle(modifier: Modifier = Modifier, locationText: String? = "") {
     Row(
         modifier = modifier
             .fillMaxWidth(),
@@ -467,8 +498,8 @@ fun CustomSearchView(
 
 @Composable
 fun TemperatureFeature(
-    feature: String,
-    resultValue: String,
+    feature: String = "",
+    resultValue: String = "",
     alignment: Alignment.Horizontal = Alignment.Start
 ) {
 
